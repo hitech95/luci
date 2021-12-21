@@ -74,7 +74,8 @@ function render_status(node, ifc, with_device) {
 	    ip6addrs = changecount ? [] : ifc.getIP6Addrs(),
 	    errors = ifc.getErrors(),
 	    maindev = ifc.getL3Device() || ifc.getDevice(),
-	    macaddr = maindev ? maindev.getMAC() : null;
+	    macaddr = maindev ? maindev.getMAC() : null,
+	    expires = ifc.getExpiry()
 
 	return L.itemlist(node, [
 		_('Protocol'), with_device ? null : (desc || '?'),
@@ -100,6 +101,7 @@ function render_status(node, ifc, with_device) {
 		_('IPv6'),     ip6addrs[9],
 		_('IPv6-PD'),  changecount ? null : ifc.getIP6Prefix(),
 		_('Information'), with_device ? null : (ifc.get('auto') != '0' ? null : _('Not started on boot')),
+		_('Expires'),  (!changecount && expires != null && expires > -1) ? '%t'.format(expires) : null,
 		_('Error'),    errors ? errors[0] : null,
 		_('Error'),    errors ? errors[1] : null,
 		_('Error'),    errors ? errors[2] : null,
