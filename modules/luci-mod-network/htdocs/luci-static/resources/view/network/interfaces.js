@@ -67,7 +67,7 @@ function render_status(node, ifc, with_device) {
 
 	var i18n = ifc.getI18n();
 	if (i18n)
-		desc = desc ? '%s (%s)'.format(desc, i18n) : i18n;
+		desc = desc ? '%s (%s)'.format(i18n, desc) : i18n;
 
 	var changecount = with_device ? 0 : count_changes(ifc.getName()),
 	    ipaddrs = changecount ? [] : ifc.getIPAddrs(),
