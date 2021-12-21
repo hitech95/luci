@@ -11,6 +11,19 @@ return network.registerProtocol('dhcpv6', {
 		return 'odhcp6c';
 	},
 
+    getExpiry: function() {
+        var uptime = this._ubus('uptime'),
+          prefixes = this._ubus('ipv6-prefix');
+
+        if (typeof(uptime) == 'number' && prefixes != null &&
+          Array.isArray(prefixes) && prefixes.length && typeof(prefixes[0].valid) == 'number') {
+          var r = prefixes[0].valid;
+          return (r > 0 ? r : 0);
+        }
+
+        return -1;
+    },
+
 	renderFormOptions: function(s) {
 		var o;
 
