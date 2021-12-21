@@ -76,40 +76,48 @@ function render_status(node, ifc, with_device) {
 	    maindev = ifc.getL3Device() || ifc.getDevice(),
 	    macaddr = maindev ? maindev.getMAC() : null;
 
-	return L.itemlist(node, [
-		_('Protocol'), with_device ? null : (desc || '?'),
-		_('Device'),   with_device ? (maindev ? maindev.getShortName() : E('em', _('Not present'))) : null,
-		_('Uptime'),   (!changecount && ifc.isUp()) ? '%t'.format(ifc.getUptime()) : null,
-		_('MAC'),      (!changecount && !ifc.isDynamic() && !ifc.isAlias() && macaddr) ? macaddr : null,
-		_('RX'),       (!changecount && !ifc.isDynamic() && !ifc.isAlias() && maindev) ? '%.2mB (%d %s)'.format(maindev.getRXBytes(), maindev.getRXPackets(), _('Pkts.')) : null,
-		_('TX'),       (!changecount && !ifc.isDynamic() && !ifc.isAlias() && maindev) ? '%.2mB (%d %s)'.format(maindev.getTXBytes(), maindev.getTXPackets(), _('Pkts.')) : null,
-		_('IPv4'),     ipaddrs[0],
-		_('IPv4'),     ipaddrs[1],
-		_('IPv4'),     ipaddrs[2],
-		_('IPv4'),     ipaddrs[3],
-		_('IPv4'),     ipaddrs[4],
-		_('IPv6'),     ip6addrs[0],
-		_('IPv6'),     ip6addrs[1],
-		_('IPv6'),     ip6addrs[2],
-		_('IPv6'),     ip6addrs[3],
-		_('IPv6'),     ip6addrs[4],
-		_('IPv6'),     ip6addrs[5],
-		_('IPv6'),     ip6addrs[6],
-		_('IPv6'),     ip6addrs[7],
-		_('IPv6'),     ip6addrs[8],
-		_('IPv6'),     ip6addrs[9],
-		_('IPv6-PD'),  changecount ? null : ifc.getIP6Prefix(),
-		_('Information'), with_device ? null : (ifc.get('auto') != '0' ? null : _('Not started on boot')),
-		_('Error'),    errors ? errors[0] : null,
-		_('Error'),    errors ? errors[1] : null,
-		_('Error'),    errors ? errors[2] : null,
-		_('Error'),    errors ? errors[3] : null,
-		_('Error'),    errors ? errors[4] : null,
-		null, changecount ? E('a', {
-			href: '#',
-			click: L.bind(ui.changes.displayChanges, ui.changes)
-		}, _('Interface has %d pending changes').format(changecount)) : null
+	const interfaceStatus = changecount ? null : ifc.renderStatus(E('div'), false);
+	dom.content(node, [
+		L.itemlist(E('div'), [
+			_('Protocol'), with_device ? null : (desc || '?'),
+			_('Device'),   with_device ? (maindev ? maindev.getShortName() : E('em', _('Not present'))) : null,
+			_('Uptime'),   (!changecount && ifc.isUp()) ? '%t'.format(ifc.getUptime()) : null,
+			_('MAC'),      (!changecount && !ifc.isDynamic() && !ifc.isAlias() && macaddr) ? macaddr : null,
+			_('RX'),       (!changecount && !ifc.isDynamic() && !ifc.isAlias() && maindev) ? '%.2mB (%d %s)'.format(maindev.getRXBytes(), maindev.getRXPackets(), _('Pkts.')) : null,
+			_('TX'),       (!changecount && !ifc.isDynamic() && !ifc.isAlias() && maindev) ? '%.2mB (%d %s)'.format(maindev.getTXBytes(), maindev.getTXPackets(), _('Pkts.')) : null,
+		]),
+		interfaceStatus ? interfaceStatus : L.itemlist(E('div'), [
+			_('IPv4'),     ipaddrs[0],
+			_('IPv4'),     ipaddrs[1],
+			_('IPv4'),     ipaddrs[2],
+			_('IPv4'),     ipaddrs[3],
+			_('IPv4'),     ipaddrs[4],
+			_('IPv6'),     ip6addrs[0],
+			_('IPv6'),     ip6addrs[1],
+			_('IPv6'),     ip6addrs[2],
+			_('IPv6'),     ip6addrs[3],
+			_('IPv6'),     ip6addrs[4],
+			_('IPv6'),     ip6addrs[5],
+			_('IPv6'),     ip6addrs[6],
+			_('IPv6'),     ip6addrs[7],
+			_('IPv6'),     ip6addrs[8],
+			_('IPv6'),     ip6addrs[9],
+			_('IPv6-PD'),  changecount ? null : ifc.getIP6Prefix()
+		]),
+		L.itemlist(E('div'), [
+			_('Information'), with_device ? null : (ifc.get('auto') != '0' ? null : _('Not started on boot')),
+			_('Error'),    errors ? errors[0] : null,
+			_('Error'),    errors ? errors[1] : null,
+			_('Error'),    errors ? errors[2] : null,
+			_('Error'),    errors ? errors[3] : null,
+			_('Error'),    errors ? errors[4] : null,
+			null, changecount ? E('a', {
+				href: '#',
+				click: L.bind(ui.changes.displayChanges, ui.changes)
+			}, _('Interface has %d pending changes').format(changecount)) : null
+		])
 	]);
+	return node;
 }
 
 function render_modal_status(node, ifc) {
