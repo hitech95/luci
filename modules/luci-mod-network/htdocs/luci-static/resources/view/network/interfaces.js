@@ -474,6 +474,7 @@ return view.extend({
 			}, this));
 		};
 
+		s.tab('status', _('Status'));
 		s.tab('general', _('General Settings'));
 		s.tab('advanced', _('Advanced Settings'));
 		s.tab('physical', _('Physical Settings'));
@@ -538,18 +539,29 @@ return view.extend({
 					return a.getProtocol() > b.getProtocol();
 				});
 
-				o = s.taboption('general', form.DummyValue, '_ifacestat_modal', _('Status'));
-				o.modalonly = true;
-				o.cfgvalue = L.bind(function(section_id) {
-					var net = this.networks.filter(function(n) { return n.getName() == section_id })[0];
+				var node = E('div', {
+					'id': '%s-ifc-status'.format(s.section),
+				});
+				var ifc = this.networks.filter(function(n) { return n.getName() == s.section })[0];
+				var customStatus = ifc ? ifc.renderStatus(node, true) : null;
+				if(customStatus) {
+					o = s.taboption('status', form.DummyValue, '_ifacestat_modal');
+					o.modalonly = true;
+					o.cfgvalue = L.bind(function(section_id) {
+						return node;
+					}, this);
+					o.write = function() {};
+				} else {
+					o = s.taboption('general', form.DummyValue, '_ifacestat_modal', _('Status'));
+					o.modalonly = true;
+					o.cfgvalue = L.bind(function(section_id) {
+						var net = this.networks.filter(function(n) { return n.getName() == section_id })[0];
+						node.class = 'ifacebadge large';
 
-					return render_modal_status(E('div', {
-						'id': '%s-ifc-status'.format(section_id),
-						'class': 'ifacebadge large'
-					}), net);
-				}, this);
-				o.write = function() {};
-
+						return render_modal_status(node, net);
+					}, this);
+					o.write = function() {};
+				}
 
 				proto_select = s.taboption('general', form.ListValue, 'proto', _('Protocol'));
 				proto_select.modalonly = true;
