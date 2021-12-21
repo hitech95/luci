@@ -305,14 +305,16 @@ return view.extend({
 			}
 
 			if (stat) {
-				var dev = ifc.getDevice();
-				dom.content(stat, [
-					E('img', {
-						'src': L.resource('icons/%s%s.png').format(dev ? dev.getType() : 'ethernet', (dev && dev.isUp()) ? '' : '_disabled'),
-						'title': dev ? dev.getTypeI18n() : _('Not present')
-					}),
-					render_status(E('span'), ifc, true)
-				]);
+		        if(!ifc.renderStatus(stat, true)) {
+					var dev = ifc.getDevice();
+					dom.content(stat, [
+						E('img', {
+							'src': L.resource('icons/%s%s.png').format(dev ? dev.getType() : 'ethernet', (dev && dev.isUp()) ? '' : '_disabled'),
+							'title': dev ? dev.getTypeI18n() : _('Not present')
+						}),
+						render_status(E('span'), ifc, true)
+					]);
+				}
 			}
 
 			btn1.disabled = isReadonlyView || btn1.classList.contains('spinning') || btn2.classList.contains('spinning') || dynamic;
