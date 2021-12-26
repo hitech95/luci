@@ -530,6 +530,40 @@ return view.extend({
 				tdEl.lastChild.lastChild
 			]);
 
+            if(dynamic && net && !uci.get('network', net.getName())) {
+                dom.content(tdEl.lastChild, [
+                    tdEl.lastChild.firstChild,
+                    tdEl.lastChild.childNodes[1],
+                    E('button', {
+                        'class': 'cbi-button cbi-button-edit',
+                        'click': function() {
+                            var renderStatus = net.renderStatus(E('div'), true);
+                            return Promise.resolve(renderStatus).then(L.bind(function(nodes) {
+                                var modal = ui.showModal(_('Status') + ' » ' + this.getName(), [
+                                    nodes,
+                                    E('div', {
+                                        'class': 'right'
+                                    }, [
+                                        E('button', {
+                                            'class': 'cbi-button cbi-button-neutral',
+                                            'click': function (ev) {
+                                                ui.hideModal();
+                                            }
+                                        }, _('Close')),
+                                    ])
+                                ]);
+
+                                modal.style.maxWidth = '50%';
+                                modal.style.maxHeight = 'none';
+                            }, net)).catch(L.error);
+                        },
+                        'title': _('Status'),
+                        'disabled': (net.renderStatus(E('div'), true)) ? null : 'disabled'
+                    }, _('Status')),
+                    tdEl.lastChild.lastChild
+                ]);
+            }
+
 			if (!dynamic && net && !uci.get('network', net.getName())) {
 				tdEl.lastChild.childNodes[0].disabled = true;
 				tdEl.lastChild.childNodes[2].disabled = true;
